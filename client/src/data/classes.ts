@@ -3,7 +3,7 @@ export type Skill = {
   name: string;
   description: string;
   mpCost: number;
-  dmg: number; // flat damage for now
+  dmg: number;
   type: 'single' | 'self' | 'aoe';
 };
 
@@ -63,7 +63,7 @@ export const CLASSES: GameClass[] = [
     defense: 5,
     skills: [
       { id: 'stab', name: '급습', description: '치명타 확률이 높은 공격', mpCost: 0, dmg: 22, type: 'single' },
-      { id: 'poison', name: '독주사', description: '지속 피해 부여', mpCost: 6, dmg: 12, type: 'single' }
+      { id: 'poison', name: '독주사', name: '독주사', description: '지속 피해 부여', mpCost: 6, dmg: 12, type: 'single' }
     ]
   }
 ];

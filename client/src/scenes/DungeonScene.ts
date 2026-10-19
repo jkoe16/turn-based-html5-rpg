@@ -20,11 +20,9 @@ export default class DungeonScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#222831');
     this.add.text(w / 2, 24, '던전', { color: '#ffffff', fontSize: '24px' }).setOrigin(0.5);
 
-    // 플레이어 초기화 (레지스트리에서 선택된 클래스 읽기)
     const classId = (this.registry.get('playerClass') as string) || 'warrior';
     this.player = new Player('p1', '플레이어', classId);
 
-    // 표시
     this.add.rectangle(w / 2 - 60, h / 2, 60, 60, 0x00b894);
     this.add.rectangle(w / 2 + 60, h / 2, 60, 60, 0xd63031);
 
@@ -32,30 +30,24 @@ export default class DungeonScene extends Phaser.Scene {
     this.enemyBar = this.add.text(16, 80, `적 HP: ${this.enemyHP}`, { color: '#ffffff' });
     this.mpBar = this.add.text(16, 104, `MP: ${this.player.mp}/${this.player.maxMP}`, { color: '#ffffff' });
 
-    // 공격 버튼
     const attackBtn = this.add.rectangle(w / 2 - 90, h - 120, 140, 56, 0xff4757).setInteractive();
     this.add.text(w / 2 - 90, h - 120, '공격', { color: '#000000' }).setOrigin(0.5);
 
-    // 스킬 버튼 1
     const skillBtn1 = this.add.rectangle(w / 2 + 90, h - 120, 140, 56, 0x3742fa).setInteractive();
     const skill1Name = this.player.getSkills()[0]?.name || '스킬1';
     this.add.text(w / 2 + 90, h - 120, skill1Name, { color: '#ffffff' }).setOrigin(0.5);
 
-    // 스킬 버튼 2 (if exists)
     let skillBtn2: Phaser.GameObjects.Rectangle | null = null;
     if (this.player.getSkills()[1]) {
       skillBtn2 = this.add.rectangle(w / 2 + 90, h - 200, 140, 44, 0x6c5ce7).setInteractive();
       this.add.text(w / 2 + 90, h - 200, this.player.getSkills()[1].name, { color: '#ffffff' }).setOrigin(0.5);
     }
 
-    // 도망 버튼
     const runBtn = this.add.rectangle(w / 2, h - 48, 200, 44, 0x8d6e63).setInteractive();
     this.add.text(w / 2, h - 48, '도망', { color: '#ffffff' }).setOrigin(0.5);
 
     runBtn.on('pointerdown', () => {
-      this.showMessage('도망쳤습니다', () => {
-        this.scene.start('TownScene');
-      });
+      this.showMessage('도망쳤습니다', () => this.scene.start('TownScene'));
     });
 
     attackBtn.on('pointerdown', () => {
@@ -100,9 +92,7 @@ export default class DungeonScene extends Phaser.Scene {
     }
     const skill = res.skill!;
     if (skill.type === 'self') {
-      // heal or buff
       if (skill.dmg < 0) {
-        // heal
         const heal = -skill.dmg;
         this.player.hp = Math.min(this.player.maxHP, this.player.hp + heal);
         this.updateHUD();
@@ -110,22 +100,17 @@ export default class DungeonScene extends Phaser.Scene {
           this.afterPlayerAction();
         });
       } else {
-        // buff - for prototype, just show message
         this.showMessage(`${skill.name} 사용: 버프 적용`, () => {
           this.afterPlayerAction();
         });
       }
     } else {
-      // deal damage
       const dmg = skill.dmg + this.player.attack;
       this.enemyHP -= dmg;
       this.updateHUD();
       this.showMessage(`${skill.name}으로 ${dmg} 피해`, () => {
-        if (this.enemyHP <= 0) {
-          this.victory();
-        } else {
-          this.afterPlayerAction();
-        }
+        if (this.enemyHP <= 0) this.victory();
+        else this.afterPlayerAction();
       });
     }
   }
@@ -140,27 +125,20 @@ export default class DungeonScene extends Phaser.Scene {
     this.player.hp -= dmg;
     this.updateHUD();
     this.showMessage(`적이 ${dmg} 피해를 입혔습니다`, () => {
-      if (this.player.hp <= 0) {
-        this.defeat();
-      } else {
-        this.isPlayerTurn = true;
-      }
+      if (this.player.hp <= 0) this.defeat();
+      else this.isPlayerTurn = true;
     });
   }
 
   victory() {
     this.showMessage('승리! 경험치와 골드 획득', () => {
-      this.time.delayedCall(800, () => {
-        this.scene.start('TownScene');
-      });
+      this.time.delayedCall(800, () => this.scene.start('TownScene'));
     });
   }
 
   defeat() {
     this.showMessage('패배... 마을로 귀환', () => {
-      this.time.delayedCall(800, () => {
-        this.scene.start('TownScene');
-      });
+      this.time.delayedCall(800, () => this.scene.start('TownScene'));
     });
   }
 
