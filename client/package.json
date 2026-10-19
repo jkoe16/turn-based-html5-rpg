@@ -1,0 +1,17 @@
+{
+  "name": "muhan-dungeon-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.60.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "vite": "^4.0.0"
+  }
+}
